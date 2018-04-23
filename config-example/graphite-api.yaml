@@ -1,0 +1,14 @@
+time_zone: America/New_York
+
+# Include all graphite functions, not required for graflux
+functions:
+  - graphite_api.functions.SeriesFunctions
+  - graphite_api.functions.PieFunctions
+
+# Tell graphite-api to use graflux to find metrics
+finders:
+  - graphouse-graphite-api.graphite.GraphouseFinder
+
+# graphouse specific configuration
+graphouse:
+  url: http://10.88.102.65:2005
