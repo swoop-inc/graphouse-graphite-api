@@ -14,15 +14,14 @@ log = get_logger()
 
 def graphouse_request(paths, start_time, end_time, graphouse_url):
     try:
-        query = parse.urlencode(
-                    {
-                        'metrics': ','.join([path.replace('\'', '\\\'') for path in paths]),
-                        'start': start_time,
-                        'end': end_time,
-                        'reqKey': 'empty'
-                    })
+        query = {
+                    'metrics': ','.join([path.replace('\'', '\\\'') for path in paths]),
+                    'start': start_time,
+                    'end': end_time,
+                    'reqKey': 'empty'
+                }
         request_url = graphouse_url + "/metricData"
-        response = requests.post(request_url, params=query)
+        response = requests.post(request_url, data=query)
 
         log.debug('graphouse_data_query: %s parameters %s' % (request_url, query))
 
@@ -34,11 +33,7 @@ def graphouse_request(paths, start_time, end_time, graphouse_url):
 
 def load_data(paths, start_time, end_time, graphouse_url, reqkey='empty'):
 
-    # Loading too many metrics at once can overflow http request headers so batch them in batches
-    metrics_data = {}
-    batch_size = 75
-    for batch in (paths[pos:pos + batch_size] for pos in xrange(0, len(paths), batch_size)):
-        metrics_data.update(graphouse_request(batch, start_time, end_time, graphouse_url))
+    metrics_data = graphouse_request(paths, start_time, end_time, graphouse_url)
 
     time_info = None
     series = {}
